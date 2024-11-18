@@ -517,10 +517,10 @@ assign video_vs = vidout_vs;
 assign video_hs = vidout_hs;
 
     localparam  VID_V_BPORCH = 'd10;
-    localparam  VID_V_ACTIVE = 'd240;
+    localparam  VID_V_ACTIVE = 'd64;
     localparam  VID_V_TOTAL = 'd512;
     localparam  VID_H_BPORCH = 'd10;
-    localparam  VID_H_ACTIVE = 'd320;
+    localparam  VID_H_ACTIVE = 'd64;
     localparam  VID_H_TOTAL = 'd400;
 
     reg [15:0]  frame_count;
@@ -591,9 +591,15 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
                 // data enable. this is the active region of the line
                 vidout_de <= 1;
                 
-                vidout_rgb[23:16] <= 8'd60;
-                vidout_rgb[15:8]  <= 8'd60;
-                vidout_rgb[7:0]   <= 8'd60;
+                vidout_rgb <= { 8'd85, 8'd85, 8'd85 };
+
+                if(x_count - VID_H_BPORCH >= 0 && x_count - VID_H_BPORCH < 32 &&
+                   y_count - VID_V_BPORCH >= 0 && y_count - VID_V_BPORCH < 32) begin
+                    vidout_rgb <= { 8'd64, 8'd64, 8'd64 };
+                end
+                if(x_count - VID_H_BPORCH == 1 && y_count - VID_V_BPORCH == 1) begin
+                    vidout_rgb <= { 8'd255, 8'd255, 8'd255 };
+                end
                 
             end 
         end
